@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Aditya Kumar | Mech-Tech Hybrid</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+  :root {
+    --primary:#00f0ff;
+    --primary2:#7b2fff;
+    --primary3:#ff2fff;
+    --glow1:rgba(0,240,255,0.5);
+    --glow2:rgba(123,47,255,0.5);
+    --bg-glass:rgba(5,5,20,0.75);
+    --border-c:rgba(0,240,255,0.3);
+    --text-accent:#00f0ff;
+    --text-light:#aaddff;
+    --grad-start:#00f0ff;
+    --grad-end:#7b2fff;
+    --badge-bg:rgba(0,240,255,0.07);
+    --card-hover:#00f0ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;cursor:none;}
+  html{scroll-behavior:smooth;}
+  body{background:#020010;color:#fff;font-family:'Segoe UI',sans-serif;overflow-x:hidden;}
+
+  /* FIXED FULL-SCREEN CHAKRA CANVAS */
+  #chakra-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+  /* GLOBAL SPARK CANVAS */
+  #spark-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9997;pointer-events:none;}
+
+  /* NAV */
+  nav{position:fixed;top:0;width:100%;z-index:500;background:rgba(2,0,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,240,255,0.2);padding:12px 0;}
+  .nav-inner{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 24px;padding:0 16px;}
+  .nav-inner a{color:rgba(0,240,255,0.6);text-decoration:none;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;transition:all .3s;position:relative;}
+  .nav-inner a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--primary);transition:width .3s;}
+  .nav-inner a:hover{color:var(--primary);text-shadow:0 0 12px var(--primary);}
+  .nav-inner a:hover::after{width:100%;}
+
+  /* CONTENT LAYER */
+  .content{position:relative;z-index:10;}
+
+  /* HOME */
+  #home{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:110px 16px 60px;position:relative;}
+  .hero-name{font-size:clamp(3rem,10vw,7.5rem);font-weight:900;background:linear-gradient(135deg,#00f0ff,#7b2fff,#ff2fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;filter:drop-shadow(0 0 30px rgba(0,240,255,0.3));}
+  .hero-sub{font-size:clamp(1rem,2.5vw,1.35rem);color:var(--text-light);margin:14px 0 8px;letter-spacing:.05em;}
+  .rpm-badge{display:inline-block;padding:5px 18px;background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.3);border-radius:99px;font-size:0.75rem;color:#00f0ff;letter-spacing:.08em;margin:10px 0 20px;animation:rpmPulse 1s ease-in-out infinite alternate;}
+  @keyframes rpmPulse{0%{box-shadow:0 0 8px rgba(0,240,255,0.2);}100%{box-shadow:0 0 22px rgba(0,240,255,0.7);}}
+  .hybrid-strip{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px 0;flex-wrap:wrap;}
+  .hyb{padding:6px 18px;border-radius:6px;font-size:0.76rem;font-weight:700;letter-spacing:.05em;}
+  .hyb.mech{background:rgba(255,80,0,0.1);border:1px solid rgba(255,140,0,0.5);color:#ffaa44;}
+  .hyb.tech{background:rgba(0,240,255,0.08);border:1px solid rgba(0,240,255,0.4);color:#00f0ff;}
+  .hyb.result{background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.5);color:#b080ff;}
+  .badge-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px;}
+  .badge{padding:5px 16px;border-radius:99px;border:1px solid rgba(0,240,255,0.25);font-size:0.76rem;color:var(--text-light);background:rgba(0,240,255,0.05);text-decoration:none;transition:all .3s;}
+  .badge:hover{border-color:var(--primary);color:var(--primary);box-shadow:0 0 12px rgba(0,240,255,0.3);}
+
+  /* SECTIONS */
+  section{padding:90px 16px;max-width:1100px;margin:0 auto;position:relative;z-index:10;}
+  .sec-title{text-align:center;font-size:clamp(1.6rem,4vw,2.5rem);font-weight:800;margin-bottom:48px;background:linear-gradient(90deg,#00f0ff,#7b2fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.05em;}
+
+  /* GLASS CARDS */
+  .glass{background:rgba(5,5,25,0.72);backdrop-filter:blur(16px);border:1px solid rgba(0,240,255,0.2);border-radius:20px;padding:28px;transition:border-color .3s,box-shadow .3s;}
+  .glass:hover{border-color:rgba(0,240,255,0.5);box-shadow:0 0 30px rgba(0,240,255,0.1),inset 0 0 20px rgba(0,240,255,0.03);}
+
+  /* SKILL BARS */
+  .skill-track{background:rgba(255,255,255,0.07);border-radius:99px;height:6px;margin-top:6px;overflow:hidden;}
+  .skill-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#00f0ff,#7b2fff);width:0;transition:width 1.5s cubic-bezier(.2,.9,.4,1.1);box-shadow:0 0 8px rgba(0,240,255,0.5);}
+  .radar-wrap{max-width:420px;margin:0 auto;}
+
+  /* ABOUT SECTION */
+  #about{max-width:100%!important;padding:90px 16px;position:relative;overflow:hidden;}
+  #about-bg-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+  #about .about-inner{max-width:1100px;margin:0 auto;position:relative;z-index:2;}
+  .about-stat .num{font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,#00f0ff,#7b2fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .about-stat .lbl{color:rgba(0,240,255,0.6);font-size:.8rem;letter-spacing:.06em;margin-top:2px;}
+
+  /* PROJECTS */
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
+  .proj-card{position:relative;border-radius:20px;overflow:hidden;border:1px solid rgba(0,240,255,0.2);background:rgba(5,5,22,0.85);transition:transform .2s,box-shadow .3s;cursor:none;}
+  .proj-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,240,255,0.04),rgba(123,47,255,0.04));pointer-events:none;}
+  .proj-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px -15px rgba(0,240,255,0.25);border-color:rgba(0,240,255,0.5);}
+  .proj-front{padding:28px;}
+  .proj-front h3{font-size:1.1rem;font-weight:700;margin-bottom:8px;color:#00f0ff;}
+  .proj-front p{font-size:0.82rem;color:rgba(180,210,255,0.7);line-height:1.7;}
+  .proj-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+  .proj-tag{padding:3px 10px;background:rgba(0,240,255,0.07);border:1px solid rgba(0,240,255,0.2);border-radius:99px;font-size:0.7rem;color:#00f0ff;}
+  .bullet-hole{position:absolute;pointer-events:none;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#000 28%,#111 48%,rgba(0,240,255,0.3) 68%,transparent 100%);box-shadow:0 0 10px 3px rgba(0,240,255,0.4),inset 0 0 5px #000;z-index:50;animation:bulletIn .15s ease-out;}
+  @keyframes bulletIn{0%{transform:scale(0);}100%{transform:scale(1);}}
+
+  /* MODAL */
+  .proj-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,10,0.93);display:none;align-items:center;justify-content:center;z-index:800;padding:16px;}
+  .proj-modal-backdrop.show{display:flex;}
+  .proj-modal{max-width:720px;width:100%;max-height:90vh;overflow-y:auto;background:rgba(5,5,25,0.97);border-radius:20px;border:1px solid rgba(0,240,255,0.3);padding:28px 24px 20px;box-shadow:0 0 60px rgba(0,240,255,0.15);}
+  .proj-modal-close{position:sticky;top:0;float:right;background:none;border:none;color:#00f0ff;cursor:none;font-size:1.1rem;}
+  .proj-modal a{display:inline-block;margin-top:16px;padding:9px 22px;border-radius:99px;background:linear-gradient(135deg,#00f0ff,#7b2fff);color:#000;font-weight:700;font-size:.83rem;text-decoration:none;}
+
+  /* CERTS */
+  #certs{max-width:100%!important;padding:90px 16px;position:relative;overflow:hidden;}
+  #cert-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+  .cert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
+  .cert-card{background:rgba(5,8,30,0.82);border:1px solid rgba(0,200,255,0.3);border-radius:16px;padding:22px;transition:all .3s;backdrop-filter:blur(10px);position:relative;z-index:2;overflow:hidden;}
+  .cert-card::before{content:'';position:absolute;top:-1px;left:10%;width:80%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.6),transparent);}
+  .cert-card:hover{border-color:#00eeff;transform:translateY(-5px);box-shadow:0 0 28px rgba(0,200,255,0.25);}
+  .cert-card h4{color:#00eeff;margin:10px 0 5px;font-size:.95rem;}
+  .cert-score{font-size:.76rem;color:rgba(0,240,255,0.6);letter-spacing:.06em;}
+
+  /* JOURNEY */
+  .timeline{position:relative;padding-left:34px;border-left:1px solid rgba(0,240,255,0.3);}
+  .tl-item{position:relative;margin-bottom:38px;}
+  .tl-dot{position:absolute;left:-43px;top:4px;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#00f0ff,#7b2fff);box-shadow:0 0 14px rgba(0,240,255,0.7);}
+  .tl-year{color:#00f0ff;font-size:.76rem;letter-spacing:.08em;margin-bottom:3px;}
+  .tl-title{font-weight:700;font-size:1rem;color:#e0f4ff;margin-bottom:4px;}
+  .tl-sub{font-size:.81rem;color:rgba(180,210,255,0.6);}
+
+  /* FUTURE */
+  #future{max-width:100%!important;padding:90px 16px;position:relative;overflow:hidden;}
+  #future-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+  .vision-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;}
+  .vision-card{background:linear-gradient(135deg,rgba(0,10,30,0.9),rgba(5,0,25,0.88));border:1px solid rgba(0,150,255,0.3);border-radius:18px;padding:24px;text-align:center;transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;z-index:2;}
+  .vision-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,240,255,0.04),rgba(123,47,255,0.04));pointer-events:none;}
+  .vision-card:hover{transform:translateY(-7px);box-shadow:0 0 35px rgba(0,150,255,0.4);border-color:#00aaff;}
+  .vision-card h4{color:#00eeff;margin:10px 0 6px;font-size:.95rem;letter-spacing:.04em;}
+  .vision-card p{color:rgba(140,200,255,0.7);font-size:.78rem;line-height:1.6;}
+  .vision-icon{font-size:2.2rem;}
+  .scan-line{position:absolute;top:0;left:0;width:100%;height:1.5px;background:linear-gradient(90deg,transparent,rgba(0,220,255,0.8),transparent);animation:scanAnim 2.5s linear infinite;pointer-events:none;}
+  @keyframes scanAnim{0%{top:-2px;}100%{top:100%;}}
+
+  /* CONTACT */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media(max-width:640px){.contact-grid{grid-template-columns:1fr;}}
+  input,textarea{width:100%;padding:11px 18px;background:rgba(0,10,30,0.6);border:1px solid rgba(0,240,255,0.2);border-radius:10px;color:#e0f4ff;font-family:inherit;font-size:.88rem;}
+  input::placeholder,textarea::placeholder{color:rgba(0,240,255,0.3);}
+  input:focus,textarea:focus{border-color:rgba(0,240,255,0.6);outline:none;box-shadow:0 0 14px rgba(0,240,255,0.1);}
+  .btn-glow{width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,#00f0ff,#7b2fff);color:#000;font-weight:800;font-size:.9rem;border:none;cursor:none;transition:all .3s;letter-spacing:.05em;}
+  .btn-glow:hover{box-shadow:0 0 30px rgba(0,240,255,0.5);transform:scale(1.02);}
+
+  .quote-bar{max-width:900px;margin:0 auto;padding:22px 28px;text-align:center;border-top:1px solid rgba(0,240,255,0.1);border-bottom:1px solid rgba(0,240,255,0.1);font-size:.83rem;color:rgba(0,240,255,0.5);letter-spacing:.04em;}
+  footer{text-align:center;padding:36px 16px;border-top:1px solid rgba(0,240,255,0.15);color:rgba(0,240,255,0.3);font-size:.82rem;letter-spacing:.06em;}
+  #scrollTop{position:fixed;bottom:28px;right:28px;z-index:600;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00f0ff,#7b2fff);border:none;cursor:none;display:none;align-items:center;justify-content:center;color:#000;font-size:.9rem;box-shadow:0 0 18px rgba(0,240,255,0.5);}
+  #scrollTop.show{display:flex;}
+
+  /* GUN CURSOR */
+  #gunCursor{position:fixed;pointer-events:none;z-index:9999;width:46px;height:46px;transform:translate(-50%,-50%);transition:transform .06s;}
+  .gun-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(0,240,255,0.9);box-shadow:0 0 10px rgba(0,240,255,0.6),inset 0 0 6px rgba(0,240,255,0.2);}
+  .gun-line-h{position:absolute;top:50%;left:0;transform:translateY(-50%);width:100%;height:1.5px;background:linear-gradient(90deg,rgba(0,240,255,0.9),rgba(0,240,255,.15) 35%,transparent 46%,transparent 54%,rgba(0,240,255,.15) 65%,rgba(0,240,255,0.9));}
+  .gun-line-v{position:absolute;left:50%;top:0;transform:translateX(-50%);height:100%;width:1.5px;background:linear-gradient(180deg,rgba(0,240,255,0.9),rgba(0,240,255,.15) 35%,transparent 46%,transparent 54%,rgba(0,240,255,.15) 65%,rgba(0,240,255,0.9));}
+  .gun-dot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3px;height:3px;border-radius:50%;background:#00f0ff;box-shadow:0 0 8px 3px rgba(0,240,255,0.9);animation:dotPulse .7s ease-in-out infinite alternate;}
+  .gun-corner{position:absolute;width:7px;height:7px;border-color:rgba(0,240,255,0.7);border-style:solid;}
+  .gun-corner.tl{top:1px;left:1px;border-width:1.5px 0 0 1.5px;}
+  .gun-corner.tr{top:1px;right:1px;border-width:1.5px 1.5px 0 0;}
+  .gun-corner.bl{bottom:1px;left:1px;border-width:0 0 1.5px 1.5px;}
+  .gun-corner.br{bottom:1px;right:1px;border-width:0 1.5px 1.5px 0;}
+  @keyframes dotPulse{0%{transform:translate(-50%,-50%) scale(1);opacity:.7;}100%{transform:translate(-50%,-50%) scale(2);opacity:1;}}
+</style>
+</head>
+<body>
+
+<!-- FIXED SUDARSHAN CHAKRA BACKGROUND (full screen, always visible) -->
+<canvas id="chakra-bg"></canvas>
+
+<!-- GLOBAL SPARK CANVAS (cursor sparks everywhere) -->
+<canvas id="spark-canvas"></canvas>
+
+<!-- GUN CURSOR -->
+<div id="gunCursor">
+  <div class="gun-ring"></div>
+  <div class="gun-line-h"></div>
+  <div class="gun-line-v"></div>
+  <div class="gun-dot"></div>
+  <div class="gun-corner tl"></div>
+  <div class="gun-corner tr"></div>
+  <div class="gun-corner bl"></div>
+  <div class="gun-corner br"></div>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#home">Home</a><a href="#about">About</a><a href="#skills">Skills</a>
+    <a href="#projects">Projects</a><a href="#certs">Certifications</a>
+    <a href="#journey">Journey</a><a href="#future">Future</a><a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
+
+<div class="content">
+
+<!-- ═══════════════════════ HOME ═══════════════════════ -->
+<section id="home" style="max-width:100%;">
+  <div style="max-width:860px;margin:0 auto;">
+    <div class="hero-name">Aditya Kumar</div>
+    <div class="hero-sub"><span id="typed"></span><span style="color:#00f0ff;animation:dotPulse .7s infinite alternate;display:inline-block;margin-left:2px;">|</span></div>
+    <div class="rpm-badge" id="rpmBadge">⚡ CHAKRA: INITIALIZING...</div>
+    <div class="hybrid-strip">
+      <span class="hyb mech">⚙️ Mechanical Engineer</span>
+      <span class="hyb tech">💻 Tech Builder</span>
+      <span class="hyb result">🔮 Mech-Tech Hybrid</span>
+    </div>
+    <div class="badge-row">
+      <span class="badge"><i class="fas fa-map-marker-alt"></i> New Delhi</span>
+      <a href="mailto:laafeiakresearch@gmail.com" class="badge">📧 laafeiakresearch@gmail.com</a>
+      <a href="tel:+916209420264" class="badge">📞 +91 6209420264</a>
+      <a href="https://www.linkedin.com/in/adityakumar47/" target="_blank" class="badge"><i class="fab fa-linkedin"></i> LinkedIn</a>
+      <a href="https://github.com/laafeiakresearch" target="_blank" class="badge"><i class="fab fa-github"></i> GitHub</a>
+    </div>
+  </div>
+</section>
+
+<div class="quote-bar" id="quoteBar">⚡ Loading system...</div>
+
+<!-- ═══════════════════════ ABOUT ═══════════════════════ -->
+<section id="about">
+  <canvas id="about-bg-canvas"></canvas>
+  <div class="about-inner">
+    <div class="sec-title">Who Is Aditya?</div>
+    <div class="glass">
+<p style="color:var(--text-light);line-height:2.0;font-size:.93rem;">
+  I am <strong style="color:#00f0ff;">Aditya Kumar</strong>, a Mechanical Engineering graduate from 
+  Darbhanga College of Engineering, BEU Patna (B.Tech 2025, CGPA 7.13). My work spans two worlds — 
+  precision engineering simulation and modern software development — and I am open to 
+  <strong style="color:#00f0ff;">opportunities in both Mechanical and IT sectors.</strong>
+  <br><br>
+   On the tech side, I have shipped real-world 
+  web apps — <strong style="color:#7b2fff;">DeutschMantra </strong> (German Vocab learning), 
+  <strong style="color:#7b2fff;">LinguaPDF</strong> (smart PDF reader with voice synthesis) — 
+  and completed a.
+  On the mechanical side, I specialize in <strong style="color:#7b2fff;">CFD & thermal analysis using ANSYS Fluent</strong>, 
+  Compare microchannel heat sinks and structural systems.
+  <br><br>
+  I use <strong style="color:#ff2fff;">AI as a co-pilot</strong> to design, build, and deploy 
+  faster — combining an engineering mindset with modern AI-assisted development. 
+  Whether it is a mechanical challenge, a software product, or a hybrid role — 
+  <strong style="color:#00f0ff;">I adapt, I build, and I deliver.</strong>
+</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+      <div class="about-stat glass text-center"><div class="num">97%</div><div class="lbl">ANSYS SCORE</div></div>
+      <div class="about-stat glass text-center"><div class="num">7.13</div><div class="lbl">CGPA</div></div>
+      <div class="about-stat glass text-center"><div class="num">4+</div><div class="lbl">NPTEL CERTS</div></div>
+      <div class="about-stat glass text-center"><div class="num">5+</div><div class="lbl">LIVE PROJECTS</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SKILLS ═══════════════════════ -->
+<section id="skills">
+  <div class="sec-title">Skills &amp; Expertise</div>
+  <div class="grid md:grid-cols-3 gap-5 mb-8">
+    <div class="glass">
+      <h3 style="color:#00f0ff;margin-bottom:16px;font-size:.9rem;letter-spacing:.08em;">⚙️ MECHANICAL &amp; CFD</h3>
+      <div class="skill-item" data-w="92"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>ANSYS Fluent</span><span style="color:#00f0ff;">92%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+      <div class="skill-item mt-4" data-w="88"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>FEM / Structural</span><span style="color:#00f0ff;">88%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+      <div class="skill-item mt-4" data-w="85"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>Thermal Simulation</span><span style="color:#00f0ff;">85%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+    </div>
+    <div class="glass">
+      <h3 style="color:#7b2fff;margin-bottom:16px;font-size:.9rem;letter-spacing:.08em;">🌐 WEB &amp; SOFTWARE</h3>
+      <div class="skill-item" data-w="78"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>HTML / CSS / JS</span><span style="color:#7b2fff;">78%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+      <div class="skill-item mt-4" data-w="72"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>Tailwind CSS</span><span style="color:#7b2fff;">72%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+      <div class="skill-item mt-4" data-w="60"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>Salesforce</span><span style="color:#7b2fff;">60%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+    </div>
+    <div class="glass">
+      <h3 style="color:#ff2fff;margin-bottom:16px;font-size:.9rem;letter-spacing:.08em;">🤖 DATA &amp; AI</h3>
+      <div class="skill-item" data-w="90"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>Excel Advanced</span><span style="color:#ff2fff;">90%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+      <div class="skill-item mt-4" data-w="65"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>Python (Pandas)</span><span style="color:#ff2fff;">65%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+      <div class="skill-item mt-4" data-w="60"><div class="flex justify-between text-sm mb-1" style="color:var(--text-light);"><span>Prompt Engineering</span><span style="color:#ff2fff;">60%</span></div><div class="skill-track"><div class="skill-fill"></div></div></div>
+    </div>
+  </div>
+  <div class="glass radar-wrap"><canvas id="radarChart" width="400" height="400"></canvas></div>
+</section>
+
+<!-- ═══════════════════════ PROJECTS ═══════════════════════ -->
+<section id="projects">
+  <div class="sec-title">Featured Projects</div>
+  <p style="text-align:center;color:rgba(0,240,255,0.4);font-size:.82rem;margin-top:-36px;margin-bottom:24px;letter-spacing:.08em;">[ CLICK CARD — BULLET IMPACT + SOUND + MISSION BRIEF ]</p>
+  <div class="proj-grid">
+    <div class="proj-card" data-project="cfd">
+      <div class="proj-front"><div style="font-size:2rem;margin-bottom:8px;">🌡️</div><h3>CFD Micro Heat Sink</h3><p>ANSYS Fluent optimization — fins increased, thermal resistance reduced by simulation.</p><div class="proj-tags"><span class="proj-tag">ANSYS Fluent</span><span class="proj-tag">CFD</span><span class="proj-tag">Thermal</span></div></div>
+    </div>
+    <div class="proj-card" data-project="DeutschMantra">
+      <div class="proj-front"><div style="font-size:2rem;margin-bottom:8px;">🇩🇪</div><h3>DeutschMantra — German Vocab</h3><p>Voice synthesis, vocabulary quizzes and paginated lesson modules.</p><div class="proj-tags"><span class="proj-tag">Web Speech API</span><span class="proj-tag">JavaScript</span></div></div>
+    </div>
+    <div class="proj-card" data-project="lingua">
+      <div class="proj-front"><div style="font-size:2rem;margin-bottom:8px;">📄</div><h3>LinguaPDF Reader</h3><p>PDF.js + real-time translation + pronunciation for language learners.</p><div class="proj-tags"><span class="proj-tag">PDF.js</span><span class="proj-tag">Translation API</span></div></div>
+    </div>
+    <div class="proj-card" data-project="sf">
+      <div class="proj-front"><div style="font-size:2rem;margin-bottom:8px;">☁️</div><h3>Salesforce Dev Intern</h3><p>Apex triggers, Lightning Web Components and CRM workflow automation.</p><div class="proj-tags"><span class="proj-tag">Apex</span><span class="proj-tag">LWC</span><span class="proj-tag">CRM</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ CERTIFICATIONS ═══════════════════════ -->
+<section id="certs">
+  <canvas id="cert-canvas"></canvas>
+  <div style="max-width:1100px;margin:0 auto;position:relative;z-index:2;">
+    <div class="sec-title" style="background:linear-gradient(90deg,#00eeff,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Honours &amp; Certifications</div>
+    <div class="cert-grid">
+      <div class="cert-card"><div style="font-size:2rem;">🏆</div><h4>ANSYS — FEA &amp; Structural</h4><span class="cert-score">97% TOP PERFORMER</span></div>
+      <div class="cert-card"><div style="font-size:2rem;">🎓</div><h4>IIT Roorkee — Web &amp; Mobile Dev</h4><span class="cert-score">GRADE A</span></div>
+      <div class="cert-card"><div style="font-size:2rem;">🔧</div><h4>Welding Science &amp; Technology</h4><span class="cert-score">NPTEL 70%</span></div>
+      <div class="cert-card"><div style="font-size:2rem;">🌐</div><h4>Salesforce Virtual Intern</h4><span class="cert-score">APEX + LWC</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ JOURNEY ═══════════════════════ -->
+<section id="journey">
+  <div class="sec-title">Career Journey</div>
+  <div class="glass timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2021 — 2025</div><div class="tl-title">B.Tech Mechanical Engineering, Darbhanga College of Engineering</div><div class="tl-sub">CGPA 7.13 · Project on Design Enhancement and CFD Analysis of a Rectangular Micro Heat Sink </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">FEB 2023</div><div class="tl-title">IIT Roorkee — Mobile Dev Certification</div><div class="tl-sub">HTML, CSS, JavaScript, Android Studio — Grade A</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">JAN 2024</div><div class="tl-title">ANSYS Training — 97% Score</div><div class="tl-sub">FEA, thermal, structural analysis — top performer</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2025-2026</div><div class="tl-title">Self-Taught Full Stack + AI Tools</div><div class="tl-sub">Shipped DeutschMantra, LinguaPDF, CFD research tools</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FUTURE ═══════════════════════ -->
+<section id="future">
+  <canvas id="future-canvas"></canvas>
+  <div style="max-width:1100px;margin:0 auto;position:relative;z-index:2;">
+    <div class="sec-title" style="background:linear-gradient(90deg,#00aaff,#00ffee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Future Vision</div>
+    <div class="vision-grid">
+      <div class="vision-card"><div class="scan-line"></div><div class="vision-icon">🏠</div><h4>AI Virtual Home Tour</h4><p>3D walkthrough + AI narration system</p></div>
+      <div class="vision-card"><div class="scan-line" style="animation-delay:.7s"></div><div class="vision-icon">🔄</div><h4>Digital Twin Dashboard</h4><p>ANSYS + live IoT sensor fusion</p></div>
+      <div class="vision-card"><div class="scan-line" style="animation-delay:1.4s"></div><div class="vision-icon">🌊</div><h4>CFD-to-Web Visualizer</h4><p>Browser-based real-time flow simulation</p></div>
+      <div class="vision-card"><div class="scan-line" style="animation-delay:2.1s"></div><div class="vision-icon">🤖</div><h4>AI Engineering Copilot</h4><p>LLM for boundary conditions & reports</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ CONTACT ═══════════════════════ -->
+<section id="contact">
+  <div class="sec-title">Let's Connect</div>
+  <div class="contact-grid">
+    <div class="glass">
+      <p style="color:var(--text-light);line-height:1.8;margin-bottom:16px;">Mechanical + digital problem solver. Open to Contribute roles, product teams or Research.</p>
+      <a href="mailto:laafeiakresearch@gmail.com" style="display:block;color:#00f0ff;text-decoration:none;margin-top:8px;font-size:.88rem;"><i class="fas fa-envelope" style="margin-right:8px;"></i>laafeiakresearch@gmail.com</a>
+      <a href="tel:+916209420264" style="display:block;color:#00f0ff;text-decoration:none;margin-top:8px;font-size:.88rem;"><i class="fas fa-phone" style="margin-right:8px;"></i>+91 6209420264</a>
+      <div style="margin-top:12px;font-size:.82rem;color:rgba(0,240,255,0.4);"><i class="fas fa-map-marker-alt" style="margin-right:6px;"></i>New Delhi — 110068</div>
+    </div>
+    
+  </div>
+</section>
+
+<footer><p>© 2025 ADITYA KUMAR — FORGING THE FUTURE, ONE SPARK AT A TIME</p></footer>
+</div>
+
+<!-- PROJECT MODAL -->
+<div id="projectModal" class="proj-modal-backdrop">
+  <div class="proj-modal">
+    <button class="proj-modal-close" onclick="closeProjectModal()"><i class="fas fa-times"></i></button>
+    <div id="proj-modal-content"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SUDARSHAN CHAKRA — FIXED FULL-SCREEN BACKGROUND (DIMMED)
+     Sparks fly outward from rotating blades across entire screen
+═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  const canvas = document.getElementById('chakra-bg');
+  const ctx    = canvas.getContext('2d');
+  let W, H, cx, cy;
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    cx = W/2; cy = H/2;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  let angle = 0;
+  let speed = 0.10;
+  const MAX_SPEED = 0.38;
+
+  // ── Sparks that fly ALL OVER the screen ──
+  const sparks = [];
+  const MAX_SPARKS = 600;
+
+  class Spark {
+    constructor(x, y, fromBlade){
+      this.x = x; this.y = y;
+      // Blade sparks fly outward + tangent; ambient sparks drift slowly
+      if(fromBlade){
+        const outAngle = Math.atan2(y - cy, x - cx);
+        const tangent  = outAngle + Math.PI/2;
+        const spd      = 1.5 + Math.random() * speed * 80;
+        this.vx = Math.cos(outAngle)*spd*0.6 + Math.cos(tangent)*spd*0.4 + (Math.random()-.5)*2;
+        this.vy = Math.sin(outAngle)*spd*0.6 + Math.sin(tangent)*spd*0.4 + (Math.random()-.5)*2;
+      } else {
+        const a = Math.random()*Math.PI*2;
+        const s = 0.3 + Math.random()*1.2;
+        this.vx = Math.cos(a)*s; this.vy = Math.sin(a)*s;
+      }
+      this.life  = 0.7 + Math.random()*0.5;
+      this.decay = 0.008 + Math.random()*0.014;
+      this.size  = Math.random()*2.2 + 0.5;
+      // Futuristic cyan/purple/magenta palette — no orange
+      const palette = ['#00f0ff','#7b2fff','#ff2fff','#00aaff','#aaffee','#ff88ff'];
+      this.color = palette[Math.floor(Math.random()*palette.length)];
+      this.gravity = 0.018;
+    }
+    update(){
+      this.x += this.vx; this.y += this.vy;
+      this.vy += this.gravity; this.vx *= 0.992;
+      this.life -= this.decay;
+      return this.life > 0 && this.x > -50 && this.x < W+50 && this.y < H+50;
+    }
+    draw(){
+      ctx.save();
+      ctx.globalAlpha = this.life * 0.6;
+      ctx.shadowBlur  = 8; ctx.shadowColor = this.color;
+      ctx.fillStyle   = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI*2);
+      ctx.fill();
+      // Streak
+      ctx.globalAlpha = this.life * 0.35;
+      ctx.strokeStyle = this.color;
+      ctx.lineWidth   = this.size * 0.5 * this.life;
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.x - this.vx*5, this.y - this.vy*5);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function emitBladeSparks(x, y, count){
+    for(let i=0; i<count; i++){
+      if(sparks.length < MAX_SPARKS) sparks.push(new Spark(x, y, true));
+    }
+  }
+
+  // Occasional ambient sparks scattered anywhere on screen
+  function emitAmbientSparks(){
+    const count = Math.floor(3 + speed * 20);
+    for(let i=0; i<count; i++){
+      if(sparks.length < MAX_SPARKS){
+        sparks.push(new Spark(Math.random()*W, Math.random()*H, false));
+      }
+    }
+  }
+
+  function drawChakra(){
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+
+    const r = Math.min(W, H) * 0.22; // slightly smaller — bg element
+
+    // Very dim outer glow
+    const grd = ctx.createRadialGradient(0,0,r*.4,0,0,r*1.3);
+    grd.addColorStop(0, 'rgba(0,240,255,0.04)');
+    grd.addColorStop(1, 'rgba(123,47,255,0)');
+    ctx.beginPath(); ctx.arc(0,0,r*1.3,0,Math.PI*2);
+    ctx.fillStyle = grd; ctx.fill();
+
+    const blades = 16;
+
+    // Blades — very dimmed, futuristic cyan/purple
+    for(let i=0; i<blades; i++){
+      const a = (i/blades)*Math.PI*2;
+      ctx.save(); ctx.rotate(a);
+      ctx.globalAlpha = 0.18;  // KEY: very dim
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.bezierCurveTo(r*.18,-r*.12, r*.65,-r*.18, r*.95,-r*.04);
+      ctx.bezierCurveTo(r*.65,0, r*.18,r*.04, 0,0);
+      const bg = ctx.createLinearGradient(0,0,r,0);
+      bg.addColorStop(0,'rgba(0,240,255,0.8)');
+      bg.addColorStop(.5,'rgba(123,47,255,0.7)');
+      bg.addColorStop(1,'rgba(255,47,255,0.3)');
+      ctx.fillStyle = bg;
+      ctx.shadowBlur = 6; ctx.shadowColor = 'rgba(0,240,255,0.3)';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Spike tips
+    for(let i=0; i<blades; i++){
+      const a = (i/blades)*Math.PI*2;
+      ctx.save(); ctx.rotate(a);
+      ctx.globalAlpha = 0.22;
+      ctx.beginPath();
+      ctx.moveTo(r*.92,-r*.04);
+      ctx.lineTo(r*1.15,0);
+      ctx.lineTo(r*.92,r*.04);
+      ctx.closePath();
+      const tg = ctx.createLinearGradient(r*.92,0,r*1.15,0);
+      tg.addColorStop(0,'rgba(0,240,255,0.8)');
+      tg.addColorStop(1,'rgba(255,47,255,0.4)');
+      ctx.fillStyle = tg;
+      ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(0,240,255,0.3)';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Inner rings — dim
+    [.28,.5,.75].forEach((f,fi)=>{
+      const colors=['rgba(0,240,255,0.12)','rgba(123,47,255,0.1)','rgba(255,47,255,0.08)'];
+      ctx.beginPath(); ctx.arc(0,0,r*f,0,Math.PI*2);
+      ctx.strokeStyle = colors[fi];
+      ctx.lineWidth   = 1.2;
+      ctx.stroke();
+    });
+
+    // Hub — dim glow
+    ctx.globalAlpha = 0.35;
+    const hg = ctx.createRadialGradient(0,0,0,0,0,r*.2);
+    hg.addColorStop(0,'rgba(180,255,255,0.9)');
+    hg.addColorStop(.5,'rgba(0,240,255,0.5)');
+    hg.addColorStop(1,'rgba(123,47,255,0.1)');
+    ctx.beginPath(); ctx.arc(0,0,r*.2,0,Math.PI*2);
+    ctx.fillStyle = hg; ctx.shadowBlur = 16;
+    ctx.shadowColor = 'rgba(0,240,255,0.4)'; ctx.fill();
+
+    ctx.restore();
+  }
+
+  let frame = 0, sparkTimer = 0, ambientTimer = 0;
+
+  function loop(){
+    requestAnimationFrame(loop);
+    frame++;
+
+    if(speed < MAX_SPEED) speed += 0.0005;
+    angle += speed;
+
+    // Update RPM badge
+    const rpm = Math.round((speed/MAX_SPEED)*18000);
+    if(frame%25===0){
+      const el = document.getElementById('rpmBadge');
+      if(el) el.textContent = '⚡ CHAKRA: ' + rpm.toLocaleString() + ' RPM';
+    }
+
+    const r = Math.min(W,H) * 0.22;
+
+    // Motion blur — dark semi-transparent fill
+    ctx.fillStyle = 'rgba(2,0,16,0.2)';
+    ctx.fillRect(0,0,W,H);
+
+    drawChakra();
+
+    // Emit sparks from all blade tips
+    sparkTimer++;
+    if(sparkTimer % 2 === 0){
+      const blades = 16;
+      const emitEvery = Math.max(1, Math.floor(4 - speed*6));
+      const count     = Math.floor(1 + speed * 15);
+      for(let i=0; i<blades; i+=emitEvery){
+        const a  = (i/blades)*Math.PI*2 + angle;
+        const tx = cx + Math.cos(a)*r*1.15;
+        const ty = cy + Math.sin(a)*r*1.15;
+        emitBladeSparks(tx, ty, count);
+      }
+    }
+
+    // Ambient sparks scattered on screen
+    ambientTimer++;
+    if(ambientTimer % 12 === 0) emitAmbientSparks();
+
+    // Update + draw sparks
+    for(let i=sparks.length-1; i>=0; i--){
+      if(!sparks[i].update()) sparks.splice(i,1);
+      else sparks[i].draw();
+    }
+  }
+  loop();
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     GUN CURSOR + CURSOR-ATTACHED SPARKS (cyan/purple)
+═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  const gunEl      = document.getElementById('gunCursor');
+  const sparkCv    = document.getElementById('spark-canvas');
+  const sctx       = sparkCv.getContext('2d');
+  let sW = window.innerWidth, sH = window.innerHeight;
+
+  function resizeSC(){
+    sW = window.innerWidth; sH = window.innerHeight;
+    sparkCv.width = sW; sparkCv.height = sH;
+  }
+  window.addEventListener('resize', resizeSC); resizeSC();
+
+  const cursparks = [];
+  const palette   = ['#00f0ff','#7b2fff','#ff2fff','#00aaff','#ffffff','#aaffff'];
+
+  class CurSpark{
+    constructor(x,y){
+      this.x=x; this.y=y;
+      const a = Math.random()*Math.PI*2;
+      const s = 1.5 + Math.random()*4;
+      this.vx = Math.cos(a)*s; this.vy = Math.sin(a)*s - 1;
+      this.life  = 1;
+      this.decay = 0.02 + Math.random()*0.025;
+      this.size  = Math.random()*2.5 + 0.8;
+      this.color = palette[Math.floor(Math.random()*palette.length)];
+      this.gravity = 0.08;
+    }
+    update(){
+      this.x+=this.vx; this.y+=this.vy;
+      this.vy+=this.gravity; this.vx*=0.96;
+      this.life-=this.decay;
+      return this.life>0 && this.y<sH+40;
+    }
+    draw(){
+      sctx.save();
+      sctx.globalAlpha = this.life * 0.85;
+      sctx.shadowBlur  = 10; sctx.shadowColor = this.color;
+      sctx.fillStyle   = this.color;
+      sctx.beginPath();
+      sctx.arc(this.x, this.y, this.size*this.life, 0, Math.PI*2);
+      sctx.fill();
+      sctx.globalAlpha = this.life * 0.4;
+      sctx.strokeStyle = this.color;
+      sctx.lineWidth   = this.size*0.5*this.life;
+      sctx.beginPath();
+      sctx.moveTo(this.x,this.y);
+      sctx.lineTo(this.x-this.vx*4,this.y-this.vy*4);
+      sctx.stroke();
+      sctx.restore();
+    }
+  }
+
+  // Cursor squeeze on click
+  document.addEventListener('mousedown',()=>{
+    gunEl.style.transform = 'translate(-50%,-50%) scale(0.7)';
+    gunEl.style.filter    = 'drop-shadow(0 0 12px #00f0ff)';
+  });
+  document.addEventListener('mouseup',()=>{
+    gunEl.style.transform = 'translate(-50%,-50%) scale(1)';
+    gunEl.style.filter    = 'none';
+  });
+
+  let lx=-1,ly=-1;
+  function onMove(e){
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    gunEl.style.left = x+'px';
+    gunEl.style.top  = y+'px';
+    const d = lx!==-1 ? Math.hypot(x-lx,y-ly) : 0;
+    // Sparks attached to cursor — emit based on movement speed
+    const count = Math.min(12, Math.floor(2 + d/8));
+    for(let i=0;i<count;i++) cursparks.push(new CurSpark(x,y));
+    lx=x; ly=y;
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, {passive:true});
+
+  // Also emit sparks even when NOT moving (idle drip)
+  setInterval(()=>{
+    if(lx!==-1){
+      for(let i=0;i<3;i++) cursparks.push(new CurSpark(lx,ly));
+    }
+  },60);
+
+  (function animS(){
+    sctx.clearRect(0,0,sW,sH);
+    for(let i=cursparks.length-1;i>=0;i--){
+      if(!cursparks[i].update()) cursparks.splice(i,1);
+      else cursparks[i].draw();
+    }
+    requestAnimationFrame(animS);
+  })();
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     ABOUT SECTION — AK47 SHELL CASING BG
+═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  const cv  = document.getElementById('about-bg-canvas');
+  if(!cv) return;
+  const ctx = cv.getContext('2d');
+  let W,H;
+  function resize(){
+    const sec=document.getElementById('about');
+    W=cv.width=sec.offsetWidth; H=cv.height=sec.offsetHeight;
+  }
+  window.addEventListener('resize',resize); setTimeout(resize,150);
+
+  class Shell{
+    constructor(init){
+      this.x=Math.random()*3000; this.y=init?Math.random()*1200:-20;
+      this.vy=0.7+Math.random()*1.4; this.vx=(Math.random()-.5)*.5;
+      this.rot=Math.random()*Math.PI*2; this.rotSpd=(Math.random()-.5)*.06;
+      this.len=12+Math.random()*9; this.r=2.5+Math.random()*2;
+      this.alpha=.3+Math.random()*.35;
+      // Futuristic tint — cyan/blue shells
+      const rnd=Math.random();
+      this.colorA=rnd>.5?`rgba(0,200,255,`:`rgba(100,80,220,`;
+    }
+    update(){this.y+=this.vy;this.x+=this.vx;this.rot+=this.rotSpd;if(this.y>H+30){this.x=Math.random()*W;this.y=-20;}}
+    draw(){
+      ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.rot);
+      ctx.globalAlpha=this.alpha;
+      ctx.beginPath();ctx.ellipse(0,0,this.r,this.len/2,0,0,Math.PI*2);
+      const g=ctx.createLinearGradient(-this.r,0,this.r,0);
+      g.addColorStop(0,'rgba(0,50,80,0.7)');
+      g.addColorStop(.4,this.colorA+'0.9)');
+      g.addColorStop(1,'rgba(20,0,60,0.6)');
+      ctx.fillStyle=g;ctx.shadowBlur=5;ctx.shadowColor=this.colorA+'0.5)';ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const shells=[];
+  for(let i=0;i<40;i++) shells.push(new Shell(true));
+
+  let flashes=[],bullets=[];
+  class Flash{
+    constructor(x,y){this.x=x;this.y=y;this.vx=(Math.random()-.5)*10;this.vy=-(Math.random()*6+2);this.life=1;this.size=Math.random()*7+3;}
+    update(){this.x+=this.vx;this.y+=this.vy;this.vy+=.3;this.life-=.04;return this.life>0;}
+    draw(){ctx.save();ctx.globalAlpha=this.life*.7;ctx.shadowBlur=12;ctx.shadowColor='#00f0ff';ctx.fillStyle=`rgba(0,220,255,${this.life})`;ctx.beginPath();ctx.arc(this.x,this.y,this.size*this.life,0,Math.PI*2);ctx.fill();ctx.restore();}
+  }
+  class Bullet{
+    constructor(){this.x=-20;this.y=Math.random()*H;this.vx=14+Math.random()*9;this.vy=(Math.random()-.5)*1.5;this.life=1;this.len=28+Math.random()*28;}
+    update(){this.x+=this.vx;this.life-=.035;return this.life>0&&this.x<W+60;}
+    draw(){
+      ctx.save();ctx.globalAlpha=this.life*.5;
+      const g=ctx.createLinearGradient(this.x-this.len,this.y,this.x,this.y);
+      g.addColorStop(0,'rgba(0,240,255,0)');g.addColorStop(1,'rgba(0,240,255,0.8)');
+      ctx.strokeStyle=g;ctx.lineWidth=1.5;ctx.shadowBlur=7;ctx.shadowColor='#00f0ff';
+      ctx.beginPath();ctx.moveTo(this.x-this.len,this.y);ctx.lineTo(this.x,this.y);ctx.stroke();ctx.restore();
+    }
+  }
+
+  setInterval(()=>{
+    const y=H*.2+Math.random()*H*.6;
+    for(let i=0;i<6;i++) flashes.push(new Flash(40+Math.random()*50,y));
+    for(let i=0;i<3;i++) bullets.push(new Bullet());
+  },2000);
+
+  function loop(){
+    requestAnimationFrame(loop);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(2,0,16,0.82)';ctx.fillRect(0,0,W,H);
+    shells.forEach(s=>{s.update();s.draw();});
+    for(let i=flashes.length-1;i>=0;i--){if(!flashes[i].update())flashes.splice(i,1);else flashes[i].draw();}
+    for(let i=bullets.length-1;i>=0;i--){if(!bullets[i].update())bullets.splice(i,1);else bullets[i].draw();}
+    // Crosshair watermark
+    ctx.save();ctx.globalAlpha=.05;ctx.strokeStyle='#00f0ff';ctx.lineWidth=1;
+    const rx=W*.88,ry=H*.5,cr=55;
+    ctx.beginPath();ctx.arc(rx,ry,cr,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(rx-cr*1.4,ry);ctx.lineTo(rx+cr*1.4,ry);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(rx,ry-cr*1.4);ctx.lineTo(rx,ry+cr*1.4);ctx.stroke();
+    ctx.restore();
+  }
+  loop();
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     CERTIFICATIONS — AI NEURAL NETWORK
+═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  const cv=document.getElementById('cert-canvas');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let W,H;
+  function resize(){const sec=document.getElementById('certs');W=cv.width=sec.offsetWidth;H=cv.height=sec.offsetHeight;}
+  window.addEventListener('resize',()=>{resize();buildNet();});
+  setTimeout(()=>{resize();buildNet();},150);
+
+  const layers=[4,6,8,6,4];
+  let nodes=[],conns=[],pulses=[];
+
+  function buildNet(){
+    nodes=[];conns=[];
+    const lspc=W/(layers.length+1);
+    layers.forEach((cnt,li)=>{
+      const x=lspc*(li+1);
+      const nspc=H/(cnt+1);
+      for(let ni=0;ni<cnt;ni++) nodes.push({x,y:nspc*(ni+1),layer:li,g:Math.random(),gd:Math.random()>.5?1:-1});
+    });
+    for(let li=0;li<layers.length-1;li++){
+      const A=nodes.filter(n=>n.layer===li);
+      const B=nodes.filter(n=>n.layer===li+1);
+      A.forEach(a=>{B.forEach(b=>{conns.push({a,b,al:.06+Math.random()*.1});});});
+    }
+  }
+
+  setInterval(()=>{
+    const sn=nodes.filter(n=>n.layer===0);if(!sn.length)return;
+    const s=sn[Math.floor(Math.random()*sn.length)];
+    const hue=180+Math.random()*80;
+    pulses.push({x:s.x,y:s.y,tl:1,ni:Math.floor(Math.random()*layers[1]),prog:0,spd:.022+Math.random()*.018,color:`hsl(${hue},100%,70%)`});
+  },200);
+
+  let t=0;
+  function loop(){
+    requestAnimationFrame(loop);t+=.012;
+    ctx.clearRect(0,0,W,H);ctx.fillStyle='rgba(2,0,16,0.9)';ctx.fillRect(0,0,W,H);
+    conns.forEach(c=>{
+      ctx.save();ctx.globalAlpha=c.al+Math.sin(t+c.a.x*.01)*.03;
+      ctx.strokeStyle='rgba(0,180,255,0.35)';ctx.lineWidth=.7;
+      ctx.beginPath();ctx.moveTo(c.a.x,c.a.y);ctx.lineTo(c.b.x,c.b.y);ctx.stroke();ctx.restore();
+    });
+    nodes.forEach(n=>{
+      n.g+=.025*n.gd;if(n.g>1||n.g<0)n.gd*=-1;
+      const p=.5+n.g*.5;
+      ctx.save();ctx.shadowBlur=14*p;ctx.shadowColor='#00ddff';
+      const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,5);
+      g.addColorStop(0,'rgba(200,250,255,0.95)');g.addColorStop(1,`rgba(0,${120+Math.floor(p*100)},255,0.6)`);
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,3.5+p*2,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+    for(let i=pulses.length-1;i>=0;i--){
+      const p=pulses[i];
+      const tn=nodes.filter(n=>n.layer===p.tl);const t2=tn[p.ni%tn.length];
+      if(!t2){pulses.splice(i,1);continue;}
+      p.prog+=p.spd;
+      const px=p.x+(t2.x-p.x)*p.prog,py=p.y+(t2.y-p.y)*p.prog;
+      ctx.save();ctx.shadowBlur=18;ctx.shadowColor=p.color;ctx.fillStyle=p.color;
+      ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fill();ctx.restore();
+      if(p.prog>=1){if(p.tl<layers.length-1){p.x=t2.x;p.y=t2.y;p.tl++;p.ni=Math.floor(Math.random()*layers[p.tl]);p.prog=0;}else pulses.splice(i,1);}
+    }
+    const labels=['ANSYS','NPTEL','IIT-R','Salesforce','97%','Grade A','FEA','LWC','CFD','Apex','AI','ML'];
+    ctx.save();ctx.globalAlpha=.1;ctx.fillStyle='#00eeff';ctx.font='10px monospace';
+    labels.forEach((l,i)=>{ctx.fillText(l,(i/labels.length)*W+Math.sin(t+i)*25,45+Math.cos(t*.7+i)*18+(i%3)*H*.32);});
+    ctx.restore();
+  }
+  buildNet();loop();
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     FUTURE SECTION — HOLOGRAPHIC HUD
+═══════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  const cv=document.getElementById('future-canvas');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  let W,H;
+  function resize(){const sec=document.getElementById('future');W=cv.width=sec.offsetWidth;H=cv.height=sec.offsetHeight;}
+  window.addEventListener('resize',resize);setTimeout(resize,150);
+
+  const rings=[];
+  for(let i=0;i<5;i++) rings.push({r:35+i*50,spd:.003+i*.002,ph:Math.random()*Math.PI*2,dash:7+i*4});
+  const fpts=[];
+  for(let i=0;i<80;i++) fpts.push({x:Math.random()*2000,y:Math.random()*900,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.25,sz:1+Math.random()*2,al:.25+Math.random()*.45,hue:185+Math.random()*45});
+  const streams=[];
+  for(let i=0;i<14;i++) streams.push({x:Math.random()*2000,y:0,spd:.8+Math.random()*2,len:35+Math.random()*75,al:.12+Math.random()*.28,hue:195+Math.random()*45});
+  let t=0;
+
+  function loop(){
+    requestAnimationFrame(loop);t+=.011;
+    ctx.clearRect(0,0,W,H);ctx.fillStyle='rgba(0,2,14,0.85)';ctx.fillRect(0,0,W,H);
+    // Grid
+    ctx.save();ctx.globalAlpha=.1;ctx.strokeStyle='#0066ff';ctx.lineWidth=.7;
+    const hz=H*.58;
+    for(let xi=0;xi<=20;xi++){const xf=W*(xi/20);ctx.beginPath();ctx.moveTo(xf,hz);ctx.lineTo(W/2+(xf-W/2)*4.5,H+120);ctx.stroke();}
+    for(let yi=0;yi<=10;yi++){const pg=yi/10,y=hz+Math.pow(pg,2)*(H+120-hz);ctx.beginPath();ctx.moveTo(W/2-W/2*Math.pow(pg,.5)*4.5,y);ctx.lineTo(W/2+W/2*Math.pow(pg,.5)*4.5,y);ctx.stroke();}
+    ctx.restore();
+    // HUD rings
+    const rcx=110,rcy=H*.28;
+    rings.forEach(rg=>{
+      ctx.save();ctx.translate(rcx,rcy);ctx.rotate(t*rg.spd+rg.ph);
+      ctx.setLineDash([rg.dash,rg.dash*.6]);ctx.strokeStyle='rgba(0,200,255,0.3)';ctx.lineWidth=1.3;ctx.shadowBlur=7;ctx.shadowColor='#00aaff';
+      ctx.beginPath();ctx.arc(0,0,rg.r,0,Math.PI*2);ctx.stroke();
+      for(let ti=0;ti<12;ti++){const ta=(ti/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(ta)*(rg.r-3),Math.sin(ta)*(rg.r-3));ctx.lineTo(Math.cos(ta)*(rg.r+3),Math.sin(ta)*(rg.r+3));ctx.strokeStyle='rgba(0,255,220,0.45)';ctx.lineWidth=.9;ctx.stroke();}
+      ctx.restore();
+    });
+    ctx.save();ctx.globalAlpha=.2;ctx.strokeStyle='#00ffcc';ctx.lineWidth=.8;ctx.setLineDash([4,7]);
+    ctx.beginPath();ctx.moveTo(rcx-160,rcy);ctx.lineTo(rcx+160,rcy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(rcx,rcy-160);ctx.lineTo(rcx,rcy+160);ctx.stroke();
+    ctx.restore();
+    // Streams
+    streams.forEach(ds=>{ds.y+=ds.spd;if(ds.y>H+100){ds.y=-100;ds.x=Math.random()*W;}
+      ctx.save();ctx.globalAlpha=ds.al;const dg=ctx.createLinearGradient(ds.x,ds.y-ds.len,ds.x,ds.y);dg.addColorStop(0,'transparent');dg.addColorStop(1,`hsla(${ds.hue},100%,70%,1)`);ctx.strokeStyle=dg;ctx.lineWidth=1.3;ctx.shadowBlur=5;ctx.shadowColor=`hsl(${ds.hue},100%,70%)`;ctx.beginPath();ctx.moveTo(ds.x,ds.y-ds.len);ctx.lineTo(ds.x,ds.y);ctx.stroke();ctx.restore();});
+    // Particles
+    fpts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.save();ctx.globalAlpha=p.al*.55;ctx.fillStyle=`hsl(${p.hue},100%,70%)`;ctx.shadowBlur=7;ctx.shadowColor=`hsl(${p.hue},100%,70%)`;ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);ctx.fill();ctx.restore();});
+    // HUD text
+    const hudT=['SYSTEM ONLINE','AI CORE: ACTIVE','SIMULATION: RDY','UPLINK: 99.8%','FORGE MODE: ON'];
+    ctx.save();ctx.font='bold 9px monospace';
+    hudT.forEach((txt,i)=>{const x=W*.62+Math.sin(t*.35+i*1.2)*55,y=H*.08+i*H*.19+Math.cos(t*.28+i)*14;ctx.globalAlpha=(.45+Math.sin(t*1.5+i)*.4)*.3;ctx.fillStyle='#00ffee';ctx.shadowBlur=5;ctx.shadowColor='#00ffee';ctx.fillText(txt,x,y);});
+    ctx.restore();
+    for(let ai=0;ai<3;ai++){const ax=W*.72+Math.cos(t*.55+ai*2)*W*.14,ay=H*.42+Math.sin(t*.38+ai*1.6)*H*.18;ctx.save();ctx.globalAlpha=.15;ctx.strokeStyle=`hsl(${195+ai*22},100%,60%)`;ctx.lineWidth=.9;ctx.setLineDash([3,10]);ctx.shadowBlur=9;ctx.shadowColor=`hsl(${195+ai*22},100%,60%)`;ctx.beginPath();ctx.arc(ax,ay,28+ai*14,t*.28+ai,t*.28+ai+Math.PI*1.4);ctx.stroke();ctx.restore();}
+  }
+  loop();
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     PROJECT CARDS — BULLET HOLES + GUNSHOT SOUND
+═══════════════════════════════════════════════════════════ -->
+<script>
+function playGunshot(){
+  try{
+    const ac=new(window.AudioContext||window.webkitAudioContext)();
+    const bl=ac.sampleRate*.24;const buf=ac.createBuffer(1,bl,ac.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<bl;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/bl,2.4);
+    const src=ac.createBufferSource();src.buffer=buf;
+    const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=160;bp.Q.value=.35;
+    const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(550,ac.currentTime);lp.frequency.exponentialRampToValueAtTime(70,ac.currentTime+.17);
+    const g=ac.createGain();g.gain.setValueAtTime(1.7,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.2);
+    const wv=ac.createWaveShaper();const cv=new Float32Array(256);
+    for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=x<0?-Math.pow(-x,.55):Math.pow(x,.55)*1.4;}
+    wv.curve=cv;src.connect(bp);bp.connect(wv);wv.connect(lp);lp.connect(g);g.connect(ac.destination);src.start();
+    const cl=ac.createOscillator();cl.type='sawtooth';cl.frequency.setValueAtTime(200,ac.currentTime);cl.frequency.exponentialRampToValueAtTime(35,ac.currentTime+.04);
+    const cg=ac.createGain();cg.gain.setValueAtTime(.5,ac.currentTime);cg.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.055);
+    cl.connect(cg);cg.connect(ac.destination);cl.start();cl.stop(ac.currentTime+.06);src.stop(ac.currentTime+.22);
+  }catch(e){}
+}
+
+function createBulletHole(card,lx,ly){
+  const h=document.createElement('div');h.className='bullet-hole';
+  h.style.left=(lx-13)+'px';h.style.top=(ly-13)+'px';card.appendChild(h);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('width','80');svg.setAttribute('height','80');
+  svg.style.cssText=`position:absolute;left:${lx-40}px;top:${ly-40}px;pointer-events:none;z-index:49;`;
+  [[40,40,16,8],[40,40,64,12],[40,40,72,40],[40,40,60,66],[40,40,26,72],[40,40,8,50],[40,40,6,28]].forEach(([x1,y1,x2,y2])=>{
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+    l.setAttribute('stroke','rgba(0,200,255,0.5)');l.setAttribute('stroke-width','1.2');
+    svg.appendChild(l);
+  });
+  card.appendChild(svg);
+  // Fade out crack after 4s
+  setTimeout(()=>{try{card.removeChild(svg);}catch(e){}},4000);
+}
+
+// Global shell eject canvas
+const ejCv=document.createElement('canvas');
+ejCv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9989;';
+document.body.appendChild(ejCv);
+const ectx=ejCv.getContext('2d');
+let eW=window.innerWidth,eH=window.innerHeight;
+ejCv.width=eW;ejCv.height=eH;
+window.addEventListener('resize',()=>{eW=window.innerWidth;eH=window.innerHeight;ejCv.width=eW;ejCv.height=eH;});
+
+const eSparks=[];
+class EjectSpark{
+  constructor(x,y){
+    this.x=x;this.y=y;this.vx=5+Math.random()*10;this.vy=-(1.5+Math.random()*6);
+    this.g=.3;this.life=1;this.decay=.022+Math.random()*.02;
+    this.isShell=Math.random()>.35;
+    this.rot=Math.random()*Math.PI*2;this.rotSpd=(Math.random()-.5)*.18;
+    this.len=9+Math.random()*7;this.r=2+Math.random()*1.5;
+    // Futuristic cyan shells
+    this.color='rgba(0,200,255,';
+  }
+  update(){this.x+=this.vx;this.y+=this.vy;this.vy+=this.g;this.vx*=.97;this.rot+=this.rotSpd;this.life-=this.decay;return this.life>0&&this.y<eH+40;}
+  draw(){
+    ectx.save();ectx.globalAlpha=this.life;
+    if(this.isShell){
+      ectx.translate(this.x,this.y);ectx.rotate(this.rot);
+      ectx.beginPath();ectx.ellipse(0,0,this.r,this.len/2,0,0,Math.PI*2);
+      const g=ectx.createLinearGradient(-this.r,0,this.r,0);
+      g.addColorStop(0,'rgba(0,50,80,0.8)');g.addColorStop(.5,this.color+'0.9)');g.addColorStop(1,'rgba(0,20,60,0.7)');
+      ectx.fillStyle=g;ectx.shadowBlur=8;ectx.shadowColor='rgba(0,220,255,0.6)';ectx.fill();
+    } else {
+      ectx.fillStyle=`rgba(0,${180+Math.floor(this.life*70)},255,${this.life})`;
+      ectx.shadowBlur=8;ectx.shadowColor='#00f0ff';
+      ectx.beginPath();ectx.arc(this.x,this.y,2.5*this.life,0,Math.PI*2);ectx.fill();
+    }
+    ectx.restore();
+  }
+}
+(function animE(){ectx.clearRect(0,0,eW,eH);for(let i=eSparks.length-1;i>=0;i--){if(!eSparks[i].update())eSparks.splice(i,1);else eSparks[i].draw();}requestAnimationFrame(animE);})();
+
+// Add crack keyframe
+const cks=document.createElement('style');
+cks.textContent='@keyframes crackIn{0%{opacity:0;transform:scale(.25);}50%{opacity:1;}100%{opacity:.5;transform:scale(1);}}';
+document.head.appendChild(cks);
+
+const PROJECT_DETAILS={
+  cfd:{title:"Design Enhancement and CFD Analysis of a Rectangular Micro Heat Sink",subtitle:"Design Enhancement & CFD Analysis — Jan 2025 – May 2025",
+    bullets:[
+      "📚 Literature base: 'Design Modeling & CFD Simulation of Parallel Plate–Fin Heat Sink Under Natural Convection'",
+      "🔧 Design modification: Fins increased from 8 → 15, reducing spacing to maximize surface area while balancing pressure drop",
+      "🖥️ Full 3D CAD geometry built in ANSYS SpaceClaim with real fin dimensions",
+      "🔲 Structured hexahedral meshing imported into ANSYS Fluent 2025 R1 for high accuracy",
+      "💨 Forced convection setup: realistic inlet velocity, k-ε turbulence model, outlet pressure boundary",
+      "🌡️ Constant heat flux applied to base — steady-state temperature & flow analysis performed",
+      "📊 Evaluated: temperature distribution, pressure drop, velocity contours, thermal resistance",
+      "✅ Mesh independence test passed — simulation convergence verified",
+      "📈 Post-processing & graph plotting done in Excel for result comparison",
+      "🏆 Outcome: Significant reduction in max surface temperature + improved thermal performance",
+      "🎓 Suitable for academic publishing and Master's applications in Thermal/Fluid Systems"
+    ]},
+  DeutschMantra:{title:"🇩🇪 DeutschMantra — German Vocab Tool",subtitle:"Pronunciation & Vocabulary App",bullets:["Web Speech API for native German pronunciation","Interactive vocabulary quizzes and paginated lesson modules","Deployed and live on GitHub Pages"],link:"https://deutschmantra.vercel.app/"},
+  lingua:{title:"📄 LinguaPDF — Smart PDF Reader",subtitle:"Translate & Speak While You Read",bullets:["PDF.js render pipeline with real-time text-selection translation","Web Speech API pronunciation engine with pinch-to-zoom support","Works offline for cached documents"],link:"https://laafeiakresearch.github.io/LinguaPDF/"},
+  sf:{title:"☁️ Salesforce Developer Internship",subtitle:"Apex + Lightning Web Components",bullets:["Built Apex trigger logic for automated CRM workflows","Designed custom Lightning Web Components (LWC) interfaces","Reduced manual data entry by 40% through workflow automation"]}
+};
+
+const modal=document.getElementById('projectModal');
+const mc=document.getElementById('proj-modal-content');
+window.openProjectModal=key=>{
+  const d=PROJECT_DETAILS[key];if(!d)return;
+  let html=`<h3 style="color:#00f0ff;margin-bottom:6px;font-size:1.1rem;">${d.title}</h3>
+  <p style="color:rgba(0,240,255,0.5);font-size:.8rem;margin-bottom:14px;letter-spacing:.05em;">${d.subtitle}</p>
+  <ul style="padding-left:20px;color:var(--text-light);line-height:2.1;font-size:.88rem;">`+d.bullets.map(b=>`<li>${b}</li>`).join('')+`</ul>`;
+  if(d.link) html+=`<a href="${d.link}" target="_blank">🚀 LAUNCH PROJECT →</a>`;
+  mc.innerHTML=html;modal.classList.add('show');
+};
+window.closeProjectModal=()=>modal.classList.remove('show');
+modal.addEventListener('click',e=>{if(e.target===modal)closeProjectModal();});
+
+document.querySelectorAll('.proj-card').forEach(card=>{
+  card.addEventListener('click',function(e){
+    playGunshot();
+    const rect=card.getBoundingClientRect();
+    createBulletHole(card,e.clientX-rect.left,e.clientY-rect.top);
+    for(let i=0;i<22;i++) eSparks.push(new EjectSpark(e.clientX,e.clientY));
+    for(let i=0;i<8;i++){const sp=new EjectSpark(e.clientX,e.clientY);sp.vx=(Math.random()-.5)*14;sp.vy=(Math.random()-.5)*14;sp.isShell=false;eSparks.push(sp);}
+    setTimeout(()=>openProjectModal(card.getAttribute('data-project')),110);
+  });
+});
+</script>
+
+<!-- ══════════════════════════════════════════════════════════
+     UI — RADAR CHART + SKILL BARS + TYPEWRITER + QUOTE
+═══════════════════════════════════════════════════════════ -->
+<script>
+// Radar chart — futuristic cyan/purple
+new Chart(document.getElementById('radarChart').getContext('2d'),{
+  type:'radar',
+  data:{
+    labels:['ANSYS/CFD','FEM','Mech Design','Excel/Data','Web Dev','Python/AI','Salesforce'],
+    datasets:[{
+      label:'Aditya Kumar',data:[92,88,82,90,78,63,60],
+      backgroundColor:'rgba(0,240,255,0.08)',
+      borderColor:'#00f0ff',borderWidth:1.5,
+      pointBackgroundColor:'#7b2fff',pointBorderColor:'#00f0ff',pointRadius:4
+    }]
+  },
+  options:{
+    scales:{r:{beginAtZero:true,max:100,
+      grid:{color:'rgba(0,240,255,0.1)'},
+      angleLines:{color:'rgba(0,240,255,0.1)'},
+      pointLabels:{color:'rgba(0,240,255,0.7)',font:{size:11}},
+      ticks:{display:false}
+    }},
+    plugins:{legend:{labels:{color:'rgba(0,240,255,0.6)',font:{size:11}}}}
+  }
+});
+
+// Skill bars
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.querySelector('.skill-fill').style.width=e.target.getAttribute('data-w')+'%';obs.unobserve(e.target);}});
+},{threshold:0.3});
+document.querySelectorAll('.skill-item').forEach(b=>obs.observe(b));
+
+// Typewriter
+const lines=["Mechanical Engineer","CFD Simulation Expert","ANSYS 97% Certified","Web App Builder","Mech-Tech Hybrid","Sudarshan Forger ⚡","Digital Weapon Forged ⚙️"];
+let li=0,ci=0,del=false;
+const tel=document.getElementById('typed');
+function type(){
+  const cur=lines[li];
+  if(!del){tel.textContent=cur.slice(0,++ci);if(ci===cur.length){del=true;setTimeout(type,2200);return;}}
+  else{tel.textContent=cur.slice(0,--ci);if(ci===0){del=false;li=(li+1)%lines.length;}}
+  setTimeout(type,del?38:82);
+}
+type();
+
+// Quote
+const quotes=[
+  {t:"The Sudarshan Chakra never stops — neither do I.",a:"Aditya Kumar"},
+  {t:"Every simulation is a weapon. Every deployment is a strike.",a:"Mech-Tech Protocol"},
+  {t:"Compress. Ignite. Expand. Deploy.",a:"System Manifesto"}
+];
+const q=quotes[new Date().getDate()%quotes.length];
+document.getElementById('quoteBar').innerHTML=`⚡ ${new Date().toLocaleDateString('en-IN')} &nbsp;|&nbsp; "${q.t}" &nbsp;—&nbsp; ${q.a}`;
+
+// Scroll button
+window.addEventListener('scroll',()=>document.getElementById('scrollTop').classList.toggle('show',window.scrollY>400));
+</script>
+
+</body>
+</html>
