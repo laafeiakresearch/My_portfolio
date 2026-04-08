@@ -11,9 +11,14 @@
 {
   "imports": {
     "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+    "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/",
+    "@vercel/analytics": "https://cdn.jsdelivr.net/npm/@vercel/analytics@1/dist/index.js"
   }
 }
+</script>
+<script type="module">
+  import { inject } from '@vercel/analytics';
+  inject();
 </script>
 <style>
   :root {
