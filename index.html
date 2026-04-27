@@ -14,12 +14,35 @@
   ];
 
   let i = 0;
-  const favicon = document.getElementById('favicon');
+
+  function setFavicon(url) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function () {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 64, 64);
+
+      const link = document.getElementById('favicon');
+      link.type = 'image/png';
+      link.href = canvas.toDataURL('image/png');
+    };
+    img.onerror = function () {
+      // skip broken image, move to next
+      i = (i + 1) % letters.length;
+    };
+    img.src = url + '?t=' + Date.now();
+  }
+
+  // Set first icon immediately
+  setFavicon(letters[0]);
 
   setInterval(() => {
     i = (i + 1) % letters.length;
-    favicon.href = letters[i] + '?t=' + Date.now();
-  }, 1000); 
+    setFavicon(letters[i]);
+  }, 1500); // 1.5 seconds per letter
 </script>
 
   
