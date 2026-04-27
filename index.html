@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" type="image/jpeg" id="favicon" href="https://science.nasa.gov/specials/your-name-in-landsat/images/a_0.jpg">
+
+<script>
+  const letters = [
+    'https://science.nasa.gov/specials/your-name-in-landsat/images/a_0.jpg',
+    'https://science.nasa.gov/specials/your-name-in-landsat/images/d_0.jpg',
+    'https://science.nasa.gov/specials/your-name-in-landsat/images/i_2.jpg',
+    'https://science.nasa.gov/specials/your-name-in-landsat/images/t_1.jpg',
+    'https://science.nasa.gov/specials/your-name-in-landsat/images/y_1.jpg',
+    'https://science.nasa.gov/specials/your-name-in-landsat/images/a_4.jpg',
+  ];
+
+  let i = 0;
+  const favicon = document.getElementById('favicon');
+
+  setInterval(() => {
+    i = (i + 1) % letters.length;
+    favicon.href = letters[i] + '?t=' + Date.now();
+  }, 1000); 
+</script>
+
+  
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Aditya Kumar | Mech-Tech Hybrid</title>
